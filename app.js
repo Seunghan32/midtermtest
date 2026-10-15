@@ -1,12 +1,12 @@
 ﻿const STORAGE_KEY = 'decision-roulette-candidates';
 
 const defaultCandidates = [
-  { id: crypto.randomUUID(), name: '짜장면', color: '#c8b8a6' },
-  { id: crypto.randomUUID(), name: '치킨', color: '#d7c9b5' },
-  { id: crypto.randomUUID(), name: '초밥', color: '#b9a58d' },
-  { id: crypto.randomUUID(), name: '피자', color: '#d1b79a' },
-  { id: crypto.randomUUID(), name: '김밥', color: '#a8917d' },
-  { id: crypto.randomUUID(), name: '국밥', color: '#c7b9ac' }
+  { id: crypto.randomUUID(), name: '짜장면', color: '#D9D3CC' },
+  { id: crypto.randomUUID(), name: '치킨', color: '#C9D3C5' },
+  { id: crypto.randomUUID(), name: '초밥', color: '#E7CFC4' },
+  { id: crypto.randomUUID(), name: '피자', color: '#B9CFE3' },
+  { id: crypto.randomUUID(), name: '김밥', color: '#D8D2E7' },
+  { id: crypto.randomUUID(), name: '국밥', color: '#E7D7B5' }
 ];
 
 const state = {
@@ -55,7 +55,7 @@ function saveCandidates() {
 }
 
 function getColorPalette(count) {
-  const palette = ['#c8b8a6', '#d7c9b5', '#b9a58d', '#d1b79a', '#a8917d', '#c7b9ac', '#d9c7b3', '#bca795', '#d9d0c6', '#b5a38d'];
+  const palette = ['#D9D3CC', '#C9D3C5', '#E7CFC4', '#B9CFE3', '#D8D2E7', '#E7D7B5', '#B8CFC3', '#E4C7C0', '#C8D5E2', '#CFCBC2'];
 
   return Array.from({ length: count }, (_, index) => {
     const candidate = state.candidates[index];
@@ -82,17 +82,27 @@ function renderCandidateList() {
     text.className = 'candidate-text';
     text.textContent = candidate.name;
 
+    const actions = document.createElement('div');
+    actions.className = 'candidate-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'edit-btn';
+    editBtn.textContent = '수정';
+    editBtn.addEventListener('click', () => {
+      editCandidate(candidate.id);
+    });
+
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.className = 'delete-btn';
     deleteBtn.textContent = '삭제';
-    deleteBtn.setAttribute('data-id', candidate.id);
-
     deleteBtn.addEventListener('click', () => {
       removeCandidate(candidate.id);
     });
 
-    item.append(text, deleteBtn);
+    actions.append(editBtn, deleteBtn);
+    item.append(text, actions);
     candidateList.appendChild(item);
   });
 }
@@ -182,6 +192,41 @@ function addCandidate(value) {
   candidateInput.focus();
 }
 
+function editCandidate(id) {
+  const candidate = state.candidates.find((item) => item.id === id);
+
+  if (!candidate) {
+    return;
+  }
+
+  const nextValue = window.prompt('후보명을 수정하세요', candidate.name);
+
+  if (nextValue === null) {
+    return;
+  }
+
+  const trimmed = nextValue.trim();
+
+  if (!trimmed) {
+    window.alert('후보 이름을 입력해 주세요.');
+    return;
+  }
+
+  const duplicate = state.candidates.some(
+    (item) => item.id !== id && item.name.toLowerCase() === trimmed.toLowerCase()
+  );
+
+  if (duplicate) {
+    window.alert('이미 존재하는 후보입니다.');
+    return;
+  }
+
+  candidate.name = trimmed;
+  saveCandidates();
+  renderCandidateList();
+  renderRoulette();
+}
+
 function removeCandidate(id) {
   state.candidates = state.candidates.filter((candidate) => candidate.id !== id);
 
@@ -257,3 +302,5 @@ loadCandidates();
 renderCandidateList();
 renderRoulette();
 updateSpinButtonState();
+
+
