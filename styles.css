@@ -1,16 +1,16 @@
-:root {
-  --bg-1: #eef2ff;
-  --bg-2: #f8fafc;
-  --panel: rgba(255, 255, 255, 0.9);
-  --panel-border: #e2e8f0;
-  --text: #1f2937;
-  --muted: #64748b;
-  --primary: #4f46e5;
-  --primary-dark: #3730a3;
-  --ghost: #eef2ff;
-  --danger: #ef4444;
-  --danger-soft: #fee2e2;
-  --shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+﻿:root {
+  --bg-1: #fdf3e8;
+  --bg-2: #fffaf5;
+  --panel: rgba(255, 250, 245, 0.95);
+  --panel-border: #f1d8c0;
+  --text: #4a3426;
+  --muted: #8b6a5b;
+  --primary: #d7774d;
+  --primary-dark: #b95d36;
+  --ghost: #fbe9dc;
+  --danger: #c75b54;
+  --danger-soft: #f9dfdc;
+  --shadow: 0 18px 35px rgba(120, 77, 48, 0.12);
 }
 
 * {
@@ -21,7 +21,7 @@ html, body {
   margin: 0;
   min-height: 100%;
   font-family: "Segoe UI", "Apple SD Gothic Neo", sans-serif;
-  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  background: radial-gradient(circle at top, #fffaf5 0%, #fbe8d7 28%, #f7efe8 100%);
   color: var(--text);
 }
 
@@ -42,17 +42,19 @@ button {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
   transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(138, 88, 52, 0.12);
 }
 
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .app-shell {
@@ -68,6 +70,8 @@ button:disabled {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3rem);
   letter-spacing: -0.05em;
+  color: #6b402e;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.7);
 }
 
 .layout {
@@ -97,15 +101,21 @@ button:disabled {
   flex: 1;
   height: 52px;
   padding: 0 16px;
-  border: 1px solid var(--panel-border);
+  border: 1px solid #edcdb2;
   border-radius: 12px;
-  background: #fff;
+  background: #fffdfb;
   color: var(--text);
   font-size: 1rem;
+  box-shadow: inset 0 1px 2px rgba(120, 77, 48, 0.04);
+}
+
+.candidate-form input:focus {
+  outline: 2px solid rgba(215, 119, 77, 0.2);
+  border-color: var(--primary);
 }
 
 .primary-btn {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), #e38f5d);
   color: white;
   padding: 0 18px;
   min-width: 120px;
@@ -114,15 +124,15 @@ button:disabled {
 }
 
 .primary-btn:hover {
-  background: var(--primary-dark);
+  background: linear-gradient(135deg, var(--primary-dark), #d67d4c);
 }
 
 .ghost-btn {
   background: var(--ghost);
-  color: var(--primary);
+  color: var(--primary-dark);
   padding: 0 14px;
   height: 42px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .panel-header {
@@ -136,6 +146,7 @@ button:disabled {
 .panel-header h2 {
   margin: 0;
   font-size: 1.2rem;
+  color: #694a3c;
 }
 
 .candidate-list {
@@ -155,13 +166,14 @@ button:disabled {
   gap: 12px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid var(--panel-border);
-  background: #f8fafc;
+  border: 1px solid #f1d9c6;
+  background: linear-gradient(135deg, #fffaf6, #fdf1e7);
 }
 
 .candidate-text {
-  font-weight: 600;
+  font-weight: 700;
   word-break: break-word;
+  color: #5b3d32;
 }
 
 .delete-btn {
@@ -179,10 +191,10 @@ button:disabled {
   align-items: center;
   justify-content: center;
   min-height: 170px;
-  border: 1px dashed var(--panel-border);
+  border: 1px dashed #ecc9af;
   border-radius: 16px;
   color: var(--muted);
-  background: #f8fafc;
+  background: #fffaf6;
   text-align: center;
   line-height: 1.6;
 }
@@ -210,16 +222,16 @@ button:disabled {
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  border: 12px solid rgba(148, 163, 184, 0.25);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
+  border: 12px solid rgba(205, 130, 94, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5), 0 14px 28px rgba(122, 81, 53, 0.14);
   transition: transform 4s cubic-bezier(0.12, 0.92, 0.26, 1);
   background: conic-gradient(
-    #4f46e5 0deg 60deg,
-    #f59e0b 60deg 120deg,
-    #10b981 120deg 180deg,
-    #ef4444 180deg 240deg,
-    #8b5cf6 240deg 300deg,
-    #ec4899 300deg 360deg
+    #c8b8a6 0deg 60deg,
+    #d7c9b5 60deg 120deg,
+    #b9a58d 120deg 180deg,
+    #d1b79a 180deg 240deg,
+    #a8917d 240deg 300deg,
+    #c7b9ac 300deg 360deg
   );
 }
 
@@ -240,14 +252,15 @@ button:disabled {
   height: 0;
   border-left: 16px solid transparent;
   border-right: 16px solid transparent;
-  border-top: 30px solid #111827;
+  border-top: 30px solid #5a3a30;
   z-index: 3;
-  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.18));
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.12));
 }
 
 .roulette-labels {
   position: absolute;
   inset: 0;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -256,13 +269,13 @@ button:disabled {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  color: white;
+  color: #fffaf5;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 2px rgba(74, 52, 38, 0.25);
 }
 
 .action-row {
@@ -290,6 +303,7 @@ button:disabled {
   margin: 8px 0 0;
   font-size: clamp(1.8rem, 2vw, 2.3rem);
   min-height: 2.5rem;
+  color: #5f3d34;
 }
 
 @media (max-width: 760px) {
