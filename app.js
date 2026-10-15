@@ -1,12 +1,12 @@
-const STORAGE_KEY = 'decision-roulette-candidates';
+﻿const STORAGE_KEY = 'decision-roulette-candidates';
 
 const defaultCandidates = [
-  { id: crypto.randomUUID(), name: '짜장면', color: '#4f46e5' },
-  { id: crypto.randomUUID(), name: '치킨', color: '#f59e0b' },
-  { id: crypto.randomUUID(), name: '초밥', color: '#10b981' },
-  { id: crypto.randomUUID(), name: '피자', color: '#ef4444' },
-  { id: crypto.randomUUID(), name: '김밥', color: '#8b5cf6' },
-  { id: crypto.randomUUID(), name: '국밥', color: '#ec4899' }
+  { id: crypto.randomUUID(), name: '짜장면', color: '#c8b8a6' },
+  { id: crypto.randomUUID(), name: '치킨', color: '#d7c9b5' },
+  { id: crypto.randomUUID(), name: '초밥', color: '#b9a58d' },
+  { id: crypto.randomUUID(), name: '피자', color: '#d1b79a' },
+  { id: crypto.randomUUID(), name: '김밥', color: '#a8917d' },
+  { id: crypto.randomUUID(), name: '국밥', color: '#c7b9ac' }
 ];
 
 const state = {
@@ -31,23 +31,31 @@ function loadCandidates() {
 
   if (!saved) {
     state.candidates = defaultCandidates.map((item) => ({ ...item }));
+    saveCandidates();
     return;
   }
 
   try {
     const parsed = JSON.parse(saved);
-    state.candidates = Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultCandidates.map((item) => ({ ...item }));
+    const nextCandidates = Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultCandidates.map((item) => ({ ...item }));
+    state.candidates = nextCandidates;
+    saveCandidates();
   } catch (error) {
     state.candidates = defaultCandidates.map((item) => ({ ...item }));
+    saveCandidates();
   }
 }
 
 function saveCandidates() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.candidates));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.candidates));
+  } catch (error) {
+    console.warn('Unable to save candidates to localStorage:', error);
+  }
 }
 
 function getColorPalette(count) {
-  const palette = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#3b82f6', '#84cc16'];
+  const palette = ['#c8b8a6', '#d7c9b5', '#b9a58d', '#d1b79a', '#a8917d', '#c7b9ac', '#d9c7b3', '#bca795', '#d9d0c6', '#b5a38d'];
 
   return Array.from({ length: count }, (_, index) => {
     const candidate = state.candidates[index];
@@ -243,6 +251,7 @@ candidateForm.addEventListener('submit', (event) => {
 clearAllBtn.addEventListener('click', clearAllCandidates);
 resetBtn.addEventListener('click', resetAll);
 spinBtn.addEventListener('click', spinRoulette);
+window.addEventListener('beforeunload', saveCandidates);
 
 loadCandidates();
 renderCandidateList();
