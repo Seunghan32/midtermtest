@@ -1,12 +1,12 @@
 ﻿const STORAGE_KEY = 'decision-roulette-candidates';
 
 const defaultCandidates = [
-  { id: crypto.randomUUID(), name: '짜장면', color: '#D9D3CC' },
-  { id: crypto.randomUUID(), name: '치킨', color: '#C9D3C5' },
-  { id: crypto.randomUUID(), name: '초밥', color: '#E7CFC4' },
-  { id: crypto.randomUUID(), name: '피자', color: '#B9CFE3' },
-  { id: crypto.randomUUID(), name: '김밥', color: '#D8D2E7' },
-  { id: crypto.randomUUID(), name: '국밥', color: '#E7D7B5' }
+  { id: crypto.randomUUID(), name: '짜장면', color: '#D9D3CC', weight: 1 },
+  { id: crypto.randomUUID(), name: '치킨', color: '#C9D3C5', weight: 1 },
+  { id: crypto.randomUUID(), name: '초밥', color: '#E7CFC4', weight: 1 },
+  { id: crypto.randomUUID(), name: '피자', color: '#B9CFE3', weight: 1 },
+  { id: crypto.randomUUID(), name: '김밥', color: '#D8D2E7', weight: 1 },
+  { id: crypto.randomUUID(), name: '국밥', color: '#E7D7B5', weight: 1 }
 ];
 
 const state = {
@@ -26,6 +26,18 @@ const resultText = document.getElementById('result-text');
 const rouletteWheel = document.getElementById('roulette-wheel');
 const rouletteLabels = document.getElementById('roulette-labels');
 
+function sanitizeCandidate(candidate, fallbackColor) {
+  const safeName = typeof candidate?.name === 'string' && candidate.name.trim() ? candidate.name.trim() : '새 후보';
+  const safeWeight = Number(candidate?.weight);
+
+  return {
+    id: candidate?.id || crypto.randomUUID(),
+    name: safeName,
+    color: candidate?.color || fallbackColor,
+    weight: Number.isFinite(safeWeight) && safeWeight >= 1 ? Math.round(safeWeight) : 1,
+  };
+}
+
 function loadCandidates() {
   const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -37,7 +49,10 @@ function loadCandidates() {
 
   try {
     const parsed = JSON.parse(saved);
-    const nextCandidates = Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultCandidates.map((item) => ({ ...item }));
+    const nextCandidates = Array.isArray(parsed) && parsed.length > 0
+      ? parsed.map((candidate, index) => sanitizeCandidate(candidate, defaultCandidates[index % defaultCandidates.length].color))
+      : defaultCandidates.map((item) => ({ ...item }));
+
     state.candidates = nextCandidates;
     saveCandidates();
   } catch (error) {
@@ -52,6 +67,10 @@ function saveCandidates() {
   } catch (error) {
     console.warn('Unable to save candidates to localStorage:', error);
   }
+}
+
+function getTotalWeight() {
+  return state.candidates.reduce((total, candidate) => total + (Number(candidate.weight) || 1), 0);
 }
 
 function getColorPalette(count) {
@@ -78,12 +97,41 @@ function renderCandidateList() {
     const item = document.createElement('li');
     item.className = 'candidate-item';
 
+    const main = document.createElement('div');
+    main.className = 'candidate-main';
+
     const text = document.createElement('span');
     text.className = 'candidate-text';
     text.textContent = candidate.name;
 
+    const weightBadge = document.createElement('span');
+    weightBadge.className = 'candidate-weight';
+    weightBadge.textContent = `가중치 ${candidate.weight}`;
+
+    main.append(text, weightBadge);
+
     const actions = document.createElement('div');
     actions.className = 'candidate-actions';
+
+    const minusBtn = document.createElement('button');
+    minusBtn.type = 'button';
+    minusBtn.className = 'weight-btn';
+    minusBtn.textContent = '-';
+    minusBtn.title = '가중치 감소';
+    minusBtn.setAttribute('aria-label', '가중치 감소');
+    minusBtn.addEventListener('click', () => {
+      adjustCandidateWeight(candidate.id, -1);
+    });
+
+    const plusBtn = document.createElement('button');
+    plusBtn.type = 'button';
+    plusBtn.className = 'weight-btn';
+    plusBtn.textContent = '+';
+    plusBtn.title = '가중치 증가';
+    plusBtn.setAttribute('aria-label', '가중치 증가');
+    plusBtn.addEventListener('click', () => {
+      adjustCandidateWeight(candidate.id, 1);
+    });
 
     const editBtn = document.createElement('button');
     editBtn.type = 'button';
@@ -101,8 +149,8 @@ function renderCandidateList() {
       removeCandidate(candidate.id);
     });
 
-    actions.append(editBtn, deleteBtn);
-    item.append(text, actions);
+    actions.append(minusBtn, plusBtn, editBtn, deleteBtn);
+    item.append(main, actions);
     candidateList.appendChild(item);
   });
 }
@@ -114,13 +162,18 @@ function renderRouletteLabels() {
     return;
   }
 
-  const angleStep = 360 / state.candidates.length;
+  const totalWeight = getTotalWeight();
+  let currentAngle = 0;
 
-  state.candidates.forEach((candidate, index) => {
+  state.candidates.forEach((candidate) => {
+    const weight = Math.max(1, Number(candidate.weight) || 1);
+    const segmentAngle = (weight / totalWeight) * 360;
+    const centerAngle = currentAngle + segmentAngle / 2;
+    currentAngle += segmentAngle;
+
     const label = document.createElement('div');
     label.className = 'roulette-label';
 
-    const centerAngle = index * angleStep + angleStep / 2;
     const radians = (centerAngle - 90) * (Math.PI / 180);
     const radius = 38;
     const x = 50 + Math.cos(radians) * radius;
@@ -144,9 +197,15 @@ function renderRoulette() {
     return;
   }
 
+  const totalWeight = getTotalWeight();
+  let currentAngle = 0;
+
   const segments = colors.map((color, index) => {
-    const start = (360 / colors.length) * index;
-    const end = (360 / colors.length) * (index + 1);
+    const candidate = state.candidates[index];
+    const weight = Math.max(1, Number(candidate?.weight) || 1);
+    const start = currentAngle;
+    const end = currentAngle + (weight / totalWeight) * 360;
+    currentAngle = end;
     return `${color} ${start}deg ${end}deg`;
   });
 
@@ -182,6 +241,7 @@ function addCandidate(value) {
     id: crypto.randomUUID(),
     name: trimmed,
     color: getColorPalette(state.candidates.length + 1)[state.candidates.length],
+    weight: 1,
   });
 
   candidateInput.value = '';
@@ -190,6 +250,19 @@ function addCandidate(value) {
   renderRoulette();
   updateSpinButtonState();
   candidateInput.focus();
+}
+
+function adjustCandidateWeight(id, delta) {
+  const candidate = state.candidates.find((item) => item.id === id);
+
+  if (!candidate) {
+    return;
+  }
+
+  candidate.weight = Math.max(1, (Number(candidate.weight) || 1) + delta);
+  saveCandidates();
+  renderCandidateList();
+  renderRoulette();
 }
 
 function editCandidate(id) {
@@ -271,10 +344,37 @@ function spinRoulette() {
   state.isSpinning = true;
   updateSpinButtonState();
 
-  const winnerIndex = Math.floor(Math.random() * state.candidates.length);
-  const winner = state.candidates[winnerIndex];
-  const segmentSize = 360 / state.candidates.length;
-  const selectedCenter = winnerIndex * segmentSize + segmentSize / 2;
+  const totalWeight = getTotalWeight();
+  let randomPick = Math.random() * totalWeight;
+  let winner = state.candidates[0];
+
+  for (const candidate of state.candidates) {
+    const candidateWeight = Math.max(1, Number(candidate.weight) || 1);
+
+    if (randomPick < candidateWeight) {
+      winner = candidate;
+      break;
+    }
+
+    randomPick -= candidateWeight;
+  }
+
+  let currentAngle = 0;
+  let selectedCenter = 0;
+
+  for (const candidate of state.candidates) {
+    const candidateWeight = Math.max(1, Number(candidate.weight) || 1);
+    const segmentAngle = (candidateWeight / totalWeight) * 360;
+    const centerAngle = currentAngle + segmentAngle / 2;
+
+    if (candidate.id === winner.id) {
+      selectedCenter = centerAngle;
+      break;
+    }
+
+    currentAngle += segmentAngle;
+  }
+
   const rotationNeeded = 360 * 8 + (360 - selectedCenter);
 
   state.totalRotation += rotationNeeded;
@@ -302,5 +402,3 @@ loadCandidates();
 renderCandidateList();
 renderRoulette();
 updateSpinButtonState();
-
-

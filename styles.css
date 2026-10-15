@@ -170,25 +170,59 @@ button:disabled {
   background: linear-gradient(135deg, #fffaf6, #fdf1e7);
 }
 
+.candidate-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
 .candidate-text {
   font-weight: 700;
   word-break: break-word;
   color: #5b3d32;
 }
 
+.candidate-weight {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f5e9df;
+  color: #7d5639;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .candidate-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
+.weight-btn,
 .edit-btn,
 .delete-btn {
-  min-width: 52px;
+  min-width: 32px;
   height: 32px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   padding: 0 10px;
+  border-radius: 8px;
+}
+
+.weight-btn {
+  background: #fffaf6;
+  color: #5c3b31;
+  border: 1px solid #edcdb2;
+  min-width: 30px;
+  width: 30px;
+  padding: 0;
 }
 
 .edit-btn {
