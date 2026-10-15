@@ -82,6 +82,16 @@ function getColorPalette(count) {
   });
 }
 
+function getCandidateChance(candidate) {
+  const totalWeight = getTotalWeight();
+  if (!totalWeight) {
+    return '0%';
+  }
+
+  const percent = ((Number(candidate.weight) || 1) / totalWeight) * 100;
+  return `${percent.toFixed(1).replace(/\.0$/, '')}%`;
+}
+
 function renderCandidateList() {
   candidateList.innerHTML = '';
 
@@ -104,11 +114,15 @@ function renderCandidateList() {
     text.className = 'candidate-text';
     text.textContent = candidate.name;
 
+    const chance = document.createElement('span');
+    chance.className = 'candidate-chance';
+    chance.textContent = `당첨확률 ${getCandidateChance(candidate)}`;
+
     const weightBadge = document.createElement('span');
     weightBadge.className = 'candidate-weight';
     weightBadge.textContent = `가중치 ${candidate.weight}`;
 
-    main.append(text, weightBadge);
+    main.append(text, chance, weightBadge);
 
     const actions = document.createElement('div');
     actions.className = 'candidate-actions';

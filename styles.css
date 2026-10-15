@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg-1: #fdf3e8;
   --bg-2: #fffaf5;
   --panel: rgba(255, 250, 245, 0.95);
@@ -182,6 +182,19 @@ button:disabled {
   font-weight: 700;
   word-break: break-word;
   color: #5b3d32;
+}
+
+.candidate-chance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f9efe7;
+  color: #684736;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .candidate-weight {
