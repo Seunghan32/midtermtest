@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>결정 룰렛</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <h1>결정 룰렛</h1>
+      </header>
+
+      <main class="layout">
+        <section class="panel input-panel">
+          <form id="candidate-form" class="candidate-form">
+            <input
+              id="candidate-input"
+              type="text"
+              maxlength="20"
+              placeholder="후보를 입력하세요"
+              aria-label="후보 입력"
+            />
+            <button type="submit" class="primary-btn">추가</button>
+          </form>
+        </section>
+
+        <section class="panel list-panel">
+          <div class="panel-header">
+            <h2>후보 목록</h2>
+            <button id="clear-all-btn" type="button" class="ghost-btn">전체 삭제</button>
+          </div>
+          <ul id="candidate-list" class="candidate-list" aria-live="polite"></ul>
+        </section>
+
+        <section class="panel roulette-panel">
+          <div class="roulette-wrap">
+            <div class="pointer" aria-hidden="true"></div>
+            <div id="roulette-wheel" class="roulette-wheel" aria-label="랜덤 선택 룰렛"></div>
+            <div id="roulette-labels" class="roulette-labels" aria-hidden="true"></div>
+          </div>
+
+          <div class="action-row">
+            <button id="spin-btn" type="button" class="primary-btn">룰렛 돌리기</button>
+            <button id="reset-btn" type="button" class="ghost-btn">다시 입력</button>
+          </div>
+
+          <div class="result-box" aria-live="polite">
+            <p class="result-label">오늘의 선택</p>
+            <h3 id="result-text">-</h3>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
